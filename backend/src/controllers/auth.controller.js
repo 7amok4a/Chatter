@@ -1,8 +1,10 @@
 import User from "../models/user.module.js";
+import sendEmail from "../emails/sendEmail.js" ;
 import { StatusCodes } from "http-status-codes";
 import BadRequestError from "../errors/bad-request.js" ; 
 import asyncWrapper from "../middlewares/asyncWrapper.js" ;
-
+import ENV from "../config/env.js";
+ 
 
 
 const Signup = asyncWrapper(async(req , res)=> {
@@ -48,6 +50,7 @@ const Signup = asyncWrapper(async(req , res)=> {
     }) ; 
 
     // to do send welcome email 
+    sendEmail(email , fullName , ENV.CLIENT_URL) ; 
 })
 
 const Login = asyncWrapper(async(req , res) => {
