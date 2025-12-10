@@ -25,13 +25,13 @@ const Signup = asyncWrapper(async(req , res)=> {
     }
 
 
-    const user = User.findOne({email : email}); 
+    const user = await User.findOne({email : email}); 
     
     if(user) 
         throw new BadRequestError("Email already exists") ; 
 
 
-    const newUser = User.create({fullName , email , password}) ; 
+    const newUser = await User.create({fullName , email , password}) ; 
 
     const token = newUser.createJwt() ; 
 
@@ -54,12 +54,44 @@ const Signup = asyncWrapper(async(req , res)=> {
 })
 
 const Login = asyncWrapper(async(req , res) => {
+    const {email , passsword} = req.body ; 
 
+    if (!email || !passsword) {
+        throw new BadRequestError("All fields is required");
+    }
+
+    const user = await User.findOne({email : email}) ; 
+
+    if (!user) 
+        throw new BadRequestError("Email is not found") ; 
+    
+    const isMacth = await User.comparePassword(passsword) ; 
+
+    if (!isMacth) 
+        throw new BadRequestError("Password is not correct") ; 
+
+    
+    const token = User.createJwt() ; 
+
+    res.cookie("jwt", token, {
+        maxAge: 7 * 24 * 60 * 60 * 1000, // MS
+        httpOnly: true, // prevent XSS attacks: cross-site scripting
+        sameSite: "strict", // CSRF attacks
+        secure: ENV.NODE_ENV === "development" ? false : true,
+    });
+
+    res.status(StatusCodes.CREATED).json({
+        _id: newUser._id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        profileImage: newUser.profileImage,
+    }) 
 })
 
 
 const Logout = asyncWrapper(async(req , res)=> {
-
+    res.cookies("jwt" , "" , {maxAge : 0}) ; 
+    res.status(StatusCodes.OK).json({message : "Logout is success"}) ; 
 })
 
 export default {
