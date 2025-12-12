@@ -5,6 +5,8 @@ import ENV from "./config/env.js";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import authRouter from "./routers/authRouter.js" ; 
+import routerMessage from "./routers/messageRouter.js"  ; 
+import authMiddleware from "./middlewares/authentication.js";
 import createConnectionDb from "./database/connection.js";
 import notFoundMiddleware from "./middlewares/notFoundHandler.js" ; 
 import errorHandlerMiddleware from "./middlewares/errorHandler.js" ; 
@@ -44,6 +46,7 @@ app.use(cookieParser()) ;
 
 //endpoint 
 app.use("/api/v1/auth" , authRouter) ; 
+app.use("/api/v1/messages" , authMiddleware , routerMessage) ; 
 app.use(errorHandlerMiddleware) ;
 app.use(notFoundMiddleware) ; // not founde endpoint  
 

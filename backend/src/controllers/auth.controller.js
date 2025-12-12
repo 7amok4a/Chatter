@@ -53,7 +53,7 @@ const Signup = asyncWrapper(async(req , res)=> {
     }) ; 
 
     // to do send welcome email 
-   // sendEmail(email , fullName , ENV.CLIENT_URL) ; 
+  //  sendEmail(email , fullName , ENV.CLIENT_URL) ; 
 
 
 })
