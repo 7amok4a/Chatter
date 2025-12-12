@@ -1,9 +1,12 @@
+import fs from "fs";
+import path from "path";
+import ENV from "../config/env.js";
 import User from "../models/user.module.js";
 import sendEmail from "../emails/sendEmail.js" ;
 import { StatusCodes } from "http-status-codes";
 import BadRequestError from "../errors/bad-request.js" ; 
 import asyncWrapper from "../middlewares/asyncWrapper.js" ;
-import ENV from "../config/env.js";
+
  
 
 
@@ -53,7 +56,9 @@ const Signup = asyncWrapper(async(req , res)=> {
     sendEmail(email , fullName , ENV.CLIENT_URL) ; 
 })
 
+
 const Login = asyncWrapper(async(req , res) => {
+
     const {email , passsword} = req.body ; 
 
     if (!email || !passsword) {
@@ -86,16 +91,56 @@ const Login = asyncWrapper(async(req , res) => {
         email: newUser.email,
         profileImage: newUser.profileImage,
     }) 
+
 })
 
 
 const Logout = asyncWrapper(async(req , res)=> {
+
     res.cookies("jwt" , "" , {maxAge : 0}) ; 
     res.status(StatusCodes.OK).json({message : "Logout is success"}) ; 
+
 })
+
+
+
+const updateProfileImage = asyncWrapper(async(req, res) => {
+
+    if(!req.file) {
+        throw new BadRequestError("Profile Image is Required") ; 
+    }
+
+    const userId = req.user._id ; 
+
+    if (req.user.profileImage) {
+        const oldImagePath = path.join(process.cwd(), req.user.profileImage);
+        if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath); 
+        }
+    }
+    const fileName = req.file.filename ; 
+
+    console.log(fileName) ; 
+
+    const imageUrl = `images/${fileName}` ; 
+
+    const updateUser = await User.findByIdAndUpdate(
+        userId , 
+        {
+            profileImage : imageUrl
+        } , 
+        {
+        new : true  , runValidators : true , 
+    })
+    res.status(StatusCodes.OK).json(updateUser) ; 
+
+
+})
+
 
 export default {
     Signup , 
     Login , 
-    Logout  , 
+    Logout  ,
+    updateProfileImage  
 }
