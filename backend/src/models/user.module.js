@@ -1,9 +1,7 @@
 import bcrypt from "bcrypt" ; 
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken" ; 
-import ENV from "../utils/env.js" ; 
-
-console.log(ENV.JWT_SECRET) ; // test  
+import ENV from "../config/env.js" ; 
 
 
 const userSchema = new mongoose.Schema ({
@@ -37,12 +35,12 @@ const userSchema = new mongoose.Schema ({
 
 userSchema.pre('save' , async function (){
 
-    if (!this.isModified("password")) ; // if data updated 
-    
-    const salt = await bcrypt.genSalt(10) ; 
+    if (!this.isModified("password"))  // if user update not change passowrd 
+        next() ; 
 
+    const salt = await bcrypt.genSalt(10) ; 
     this.password = await bcrypt.hash(this.password , salt) ; 
- 
+    
 
 })
 

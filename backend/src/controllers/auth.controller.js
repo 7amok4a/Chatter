@@ -12,12 +12,12 @@ import asyncWrapper from "../middlewares/asyncWrapper.js" ;
 
 const Signup = asyncWrapper(async(req , res)=> {
 
-    const {fullName , email , passsword} = req.body ; 
-    if (!fullName || !email || !passsword) 
+    const {fullName , email , password} = req.body ; 
+    if (!fullName || !email || !password) 
         throw new BadRequestError("All fields is required");
     
     
-    if (passsword.length < 6) 
+    if (password.length < 6) 
         throw new BadRequestError("password is very short") ; 
     
     
@@ -53,15 +53,17 @@ const Signup = asyncWrapper(async(req , res)=> {
     }) ; 
 
     // to do send welcome email 
-    sendEmail(email , fullName , ENV.CLIENT_URL) ; 
+   // sendEmail(email , fullName , ENV.CLIENT_URL) ; 
+
+
 })
 
 
 const Login = asyncWrapper(async(req , res) => {
 
-    const {email , passsword} = req.body ; 
+    const {email , password} = req.body ; 
 
-    if (!email || !passsword) {
+    if (!email || !password) {
         throw new BadRequestError("All fields is required");
     }
 
@@ -70,13 +72,13 @@ const Login = asyncWrapper(async(req , res) => {
     if (!user) 
         throw new BadRequestError("Email is not found") ; 
     
-    const isMacth = await User.comparePassword(passsword) ; 
+    const isMacth = await user.comparePassword(password) ; 
 
     if (!isMacth) 
         throw new BadRequestError("Password is not correct") ; 
 
     
-    const token = User.createJwt() ; 
+    const token = user.createJwt() ; 
 
     res.cookie("jwt", token, {
         maxAge: 7 * 24 * 60 * 60 * 1000, // MS
@@ -85,11 +87,11 @@ const Login = asyncWrapper(async(req , res) => {
         secure: ENV.NODE_ENV === "development" ? false : true,
     });
 
-    res.status(StatusCodes.CREATED).json({
-        _id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        profileImage: newUser.profileImage,
+    res.status(StatusCodes.OK).json({
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profileImage: user.profileImage,
     }) 
 
 })
@@ -97,7 +99,7 @@ const Login = asyncWrapper(async(req , res) => {
 
 const Logout = asyncWrapper(async(req , res)=> {
 
-    res.cookies("jwt" , "" , {maxAge : 0}) ; 
+    res.cookie("jwt" , "" , {maxAge : 0}) ; 
     res.status(StatusCodes.OK).json({message : "Logout is success"}) ; 
 
 })

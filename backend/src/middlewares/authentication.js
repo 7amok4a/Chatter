@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken" ; 
-import ENV from "../utils/env.js";
+import ENV from "../config/env.js";
 import User from "../models/user.module.js";
 import unAuthenticatedError from "../errors/unAuthError.js" ; 
 
