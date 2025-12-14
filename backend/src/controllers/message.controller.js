@@ -3,7 +3,7 @@ import User from "../models/user.module.js";
 import Message from "../models/message.module.js" ; 
 import BadRequestError from "../errors/bad-request.js" ; 
 import asyncWrapper from "../middlewares/asyncWrapper.js" ;
-
+import { getReceiverSocketId, io } from "../config/socket.js";
 
 const getAllContacts =  asyncWrapper(async(req , res)=> {
 
@@ -104,6 +104,12 @@ const sendMessages = asyncWrapper(async(req , res)=> {
     const newMessage = await Message.create({senderId , receiverId , text , image : imageUrl}) ; 
 
     //todo socket io  
+     
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
     res.status(StatusCodes.CREATED).json(newMessage);
 
 

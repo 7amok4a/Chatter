@@ -1,9 +1,11 @@
+import path  from "path";
 import cors from "cors" ; 
 import helmet from "helmet";
 import express from "express" ; 
 import ENV from "./config/env.js"; 
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
+import {app , server} from "./config/socket.js" ; 
 import authRouter from "./routers/authRouter.js" ; 
 import routerMessage from "./routers/messageRouter.js"  ; 
 import authMiddleware from "./middlewares/authentication.js";
@@ -12,7 +14,7 @@ import notFoundMiddleware from "./middlewares/notFoundHandler.js" ;
 import errorHandlerMiddleware from "./middlewares/errorHandler.js" ; 
 
 
-const app = express() ; 
+
 
 // middlewares and secrity options 
 app.use(cors(
@@ -24,7 +26,7 @@ app.use(cors(
 
 app.use(rateLimit({
     windowMs : 15*60*1000 , 
-    max : 10 , // 10 request for per windowMs i minimize it to test ratelimit 
+    max : 100 , // 10 request for per windowMs i minimize it to test ratelimit 
 }))
 
 app.use(helmet()) ; 
@@ -33,16 +35,16 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser()) ; 
 
 
-// //static for images 
-// app.use(
-//   "/images",
-//   cors({ origin: ENV.CLIENT_URL }), // allow cross-origin requests
-//   express.static(path.join(process.cwd(), "images"), {
-//     setHeaders: (res, filePath) => {
-//       res.setHeader("Cross-Origin-Resource-Policy", "same-site"); //
-//     },
-//   })
-// );
+//static for images 
+app.use(
+  "/images",
+  cors({ origin: ENV.CLIENT_URL }), // allow cross-origin requests
+  express.static(path.join(process.cwd(), "images"), {
+    setHeaders: (res, filePath) => {
+      res.setHeader("Cross-Origin-Resource-Policy", "same-site"); //
+    },
+  })
+);
 
 //endpoint 
 app.use("/api/v1/auth" , authRouter) ; 
@@ -53,7 +55,7 @@ app.use(notFoundMiddleware) ; // not founde endpoint
 const start = async()=> {
     try {
         await createConnectionDb() ; 
-        app.listen(ENV.PORT , console.log(`Server is running in http://localhost${ENV.PORT}`)) ; 
+        server.listen(ENV.PORT , console.log(`Server is running in http://localhost:${ENV.PORT}`)) ; 
     }catch(err) {
         console.log(err) ; 
     }
