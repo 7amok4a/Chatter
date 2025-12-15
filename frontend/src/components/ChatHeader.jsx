@@ -30,7 +30,7 @@ function ChatHeader() {
             <img 
               src={
                 selectedUser.profileImage 
-                  ? `${import.meta.env.VITE_API_BASE_URL}/${selectedUser.profileImage}`
+                  ? `http://localhost:3000/${selectedUser.profileImage}`
                   : "/avatar.png"
               } 
               alt={selectedUser.fullName}

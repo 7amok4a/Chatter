@@ -28,7 +28,7 @@ function ContactList() {
                 <img 
                   src={
                     contact.profileImage 
-                      ? `${import.meta.env.VITE_API_BASE_URL}/${contact.profileImage}`
+                      ? `http://localhost:3000/${contact.profileImage}`
                       : "/avatar.png"
                   }
                   alt={contact.fullName}

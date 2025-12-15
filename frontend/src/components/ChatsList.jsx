@@ -30,7 +30,7 @@ function ChatsList() {
                 <img 
                   src={
                     chat.profileImage 
-                      ? `${import.meta.env.VITE_API_BASE_URL}/${chat.profileImage}`
+                      ? `http://localhost:3000/${chat.profileImage}`
                       : "/avatar.png"
                   } 
                   alt={chat.fullName}

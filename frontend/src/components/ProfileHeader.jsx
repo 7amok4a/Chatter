@@ -55,7 +55,7 @@ function ProfileHeader() {
               <img
                 src={selectedImg  || 
                     (authUser && authUser.profileImage
-                        ? `${import.meta.env.VITE_API_BASE_URL}/${authUser.profileImage}`
+                        ? `http://localhost:3000/${authUser.profileImage}`
                         : "/avatar.png")}
                 alt="User image"
                 className="size-full object-cover"

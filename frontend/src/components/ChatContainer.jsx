@@ -41,9 +41,9 @@ function ChatContainer() {
     if (imagePath && imagePath.startsWith('blob:')) {
       return imagePath;
     }
- 
-    return `${import.meta.env.VITE_API_BASE_URL}/${imagePath}`;
-  };
+    console.log(`${import.meta.env.VITE_API_BASE_URL}/${imagePath}`) ; 
+    return `http://localhost:3000/${imagePath}` ; 
+};
 
   return (
     <>

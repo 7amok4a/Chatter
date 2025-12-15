@@ -55,6 +55,7 @@ app.use(notFoundMiddleware) ; // not founde endpoint
 const start = async()=> {
     try {
         await createConnectionDb() ; 
+        console.log(path.join(process.cwd(), "images") ) ; 
         server.listen(ENV.PORT , console.log(`Server is running in http://localhost:${ENV.PORT}`)) ; 
     }catch(err) {
         console.log(err) ; 
